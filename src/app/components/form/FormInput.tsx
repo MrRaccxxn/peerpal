@@ -17,6 +17,7 @@ export type FormInputProps<TFormValues extends FieldValues> = {
   register?: UseFormRegister<TFormValues>;
   errors?: Partial<DeepMap<TFormValues, FieldError>>;
   min?: string;
+  label?: string;
 } & Omit<InputProps, "name">;
 
 export const FormInput = <TFormValues extends Record<string | any, unknown>>({
@@ -26,6 +27,7 @@ export const FormInput = <TFormValues extends Record<string | any, unknown>>({
   errors,
   className,
   min,
+  label,
   ...props
 }: FormInputProps<TFormValues>): JSX.Element => {
   const errorMessages = get(errors, name);
@@ -33,14 +35,21 @@ export const FormInput = <TFormValues extends Record<string | any, unknown>>({
 
   return (
     <div className={classNames("", className)} aria-live="polite">
-      <Input
-        name={name}
-        min={min}
-        aria-invalid={hasError}
-        className={classNames([className])}
-        {...props}
-        {...(register && register(name, rules))}
-      />
+      <div className="form-control w-full">
+        <label className="label">
+          <span className="label-text">{label}</span>
+        </label>
+        <Input
+          name={name}
+          min={min}
+          aria-invalid={hasError}
+          className={classNames([className])}
+          label={label}
+          {...props}
+          {...(register && register(name, rules))}
+        />
+      </div>
+
       <ErrorMessage
         errors={errors}
         name={name as any}

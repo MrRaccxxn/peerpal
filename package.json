@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
+    "@hookform/resolvers": "^3.3.2",
     "@lighthouse-web3/sdk": "^0.2.8",
+    "@svgr/webpack": "^8.1.0",
     "@web3modal/wagmi": "^3.3.2",
     "classnames": "^2.3.2",
     "ethers": "^6.8.1",
