@@ -10,12 +10,12 @@ const CryptoExchangerSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  countryOfResidence: {
-    type: String,
+  exchangeRate : {
+    type: Number,
     required: true,
   },
-  dob: {
-    type: Date,
+  limitAvailable : {
+    type: Number,
     required: true,
   },
 });

@@ -4,8 +4,9 @@ export const CryptoExchanger = z.object({
   id: z.string(),
   email: z.string().email(),
   fullName: z.string(),
-  countryOfResidence: z.string(),
-  dob: z.coerce.date(),
+  walletAddress: z.string(),
+  exchangeRate: z.number(),
+  limitAvailable: z.number(),
 });
 
 export const CryptoExchangerInput = CryptoExchanger.omit({

@@ -1,15 +1,21 @@
+"use client";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/app/components/form/FormInput";
-import { NounsIcon } from "@/app/components/Icons/Icons";
+import { NounsIcon, Spinner } from "@/app/components/Icons/Icons";
 import { useCryptoExchangers } from "@/app/hooks/useCryptoExchanger";
+import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
+import { CryptoExchangerInput } from "@/pages/api/models/crypto-exchanger.model";
+import { toast } from "react-toastify";
 
 const CryptoExchangerPersonalDetailsProps = z.object({
   email: z.string().email(),
   fullName: z.string(),
-  countryOfResidence: z.string(),
-  dob: z.coerce.date(),
+  exchangeRate: z.coerce.number(),
+  limitAvailable: z.coerce.number(),
 });
 
 type CryptoExchangerPersonalDetailsProps = z.infer<
@@ -17,6 +23,7 @@ type CryptoExchangerPersonalDetailsProps = z.infer<
 >;
 
 export const CryptoExchangerRegisterForm = () => {
+  const { address } = useAccount();
   const {
     register,
     handleSubmit,
@@ -24,10 +31,20 @@ export const CryptoExchangerRegisterForm = () => {
   } = useForm<CryptoExchangerPersonalDetailsProps>({
     resolver: zodResolver(CryptoExchangerPersonalDetailsProps),
   });
-  const { createCryptoExchanger } = useCryptoExchangers();
-
+  const router = useRouter();
+  const { createCryptoExchanger } = useCryptoExchangers({
+    onSuccess: () => {
+      router.push("/crypto-exchanger");
+    },
+    onError: () => {
+      toast.error("An error occured, please try again later");
+    },
+  });
   const onSubmit = (data: CryptoExchangerPersonalDetailsProps) => {
-    createCryptoExchanger.mutate(data);
+    createCryptoExchanger.mutate({
+      ...data,
+      walletAddress: address ?? "",
+    });
   };
 
   return (
@@ -69,34 +86,34 @@ export const CryptoExchangerRegisterForm = () => {
           errors={errors}
         />
         <FormInput<CryptoExchangerPersonalDetailsProps>
-          id="countryOfResidence"
-          type="text"
-          name="countryOfResidence"
-          label="Country of residence"
-          placeholder="Country of residence"
+          id="limitAvailable"
+          type="number"
+          name="limitAvailable"
+          label="Fiat available"
+          placeholder="100"
           className="w-full focus:outline-none"
           register={register}
-          rules={{ required: "You must enter your contry of residence." }}
+          rules={{ required: "You must enter a valid quantity." }}
           errors={errors}
         />
         <FormInput<CryptoExchangerPersonalDetailsProps>
-          id="title"
-          type="date"
-          name="dob"
-          label="Date of birth"
-          placeholder="dd/mm/yyyy"
+          id="exchangeRate"
+          type="number"
+          name="exchangeRate"
+          label="Exchange rate per each fiat"
           className="w-full focus:outline-none"
+          placeholder="Exchange rate per each fiat"
           register={register}
-          rules={{ required: "You must enter a title." }}
+          rules={{ required: "You must enter a valid exchange rate." }}
           errors={errors}
         />
       </div>
       <button
         type="submit"
-        className="button w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+        className="button text-center w-full flex justify-center items-center py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
         onClick={handleSubmit(onSubmit)}
       >
-        Submit
+        {createCryptoExchanger.isLoading ? <Spinner /> : <span>Submit</span>}
       </button>
     </form>
   );

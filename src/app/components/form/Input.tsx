@@ -7,7 +7,8 @@ export type InputType =
   | "password"
   | "date"
   | "datetime-local"
-  | "checkbox";
+  | "checkbox"
+  | "number";
 
 export type InputProps = {
   id: string;

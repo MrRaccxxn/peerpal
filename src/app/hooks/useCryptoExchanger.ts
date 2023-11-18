@@ -1,16 +1,24 @@
+"use client";
+
 import { CryptoExchangerInput } from "@/pages/api/models/crypto-exchanger.model";
-import apiClient from "../providers/apiClient";
 import { useMutation, useQuery } from "react-query";
 import cryptoExchangerEndpoints from "@/pages/api/endpoints/crypto-exchanger/crypto-exchanger.endpoint";
 
-export const useCryptoExchangers = () => {
-  const useGetAllCryptoExchangers = async () => {
-    if (!apiClient) throw new Error("Api client is not defined");
-
-    return useQuery(["get-all-crypto-exchangers"], async () => {
-      return apiClient.get("/crypto-exchanger");
-    });
-  };
+export const useCryptoExchangers = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: () => void;
+  onError?: () => void;
+}) => {
+  const useGetAllCryptoExchangers = useQuery(
+    ["get-all-crypto-exchangers"],
+    async () => {
+      return await cryptoExchangerEndpoints
+        .getAllCryptoExchangers()
+        .then((res) => res);
+    }
+  );
 
   const createCryptoExchanger = useMutation({
     mutationFn: async (cryptoExchanger: CryptoExchangerInput) => {
@@ -18,6 +26,12 @@ export const useCryptoExchangers = () => {
         cryptoExchangerEndpoints.createCryptoExchanger(cryptoExchanger);
 
       return result;
+    },
+    onSuccess: () => {
+      onSuccess && onSuccess();
+    },
+    onError: () => {
+      onError && onError();
     },
   });
 
