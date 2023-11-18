@@ -1,6 +1,6 @@
 import dbConnect from "@/app/db/dbConnection";
 import CryptoExchangerModel from "@/app/db/models/cryptoExchanger.model";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,11 +9,12 @@ export default async function handler(
   try {
     dbConnect();
     const cryptoExchangers = CryptoExchangerModel;
-
-    const cryptoExchanger = await cryptoExchangers.create(req.body);
-    res.status(200).json({ data: cryptoExchanger });
+    const cryptoExchanger = await cryptoExchangers.create(
+      req.body?.cryptoExchanger
+    );
+    res.json({ data: cryptoExchanger });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.json({ message: "Internal server error" });
   }
 }

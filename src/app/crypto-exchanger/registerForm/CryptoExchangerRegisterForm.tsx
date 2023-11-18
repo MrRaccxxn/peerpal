@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/app/components/form/FormInput";
 import { NounsIcon } from "@/app/components/Icons/Icons";
+import { useCryptoExchangers } from "@/app/hooks/useCryptoExchanger";
 
 const CryptoExchangerPersonalDetailsProps = z.object({
   email: z.string().email(),
@@ -23,9 +24,17 @@ export const CryptoExchangerRegisterForm = () => {
   } = useForm<CryptoExchangerPersonalDetailsProps>({
     resolver: zodResolver(CryptoExchangerPersonalDetailsProps),
   });
+  const { createCryptoExchanger } = useCryptoExchangers();
+
+  const onSubmit = (data: CryptoExchangerPersonalDetailsProps) => {
+    createCryptoExchanger.mutate(data);
+  };
 
   return (
-    <form className="max-w-md mx-auto p-6 bg-white shadow-md rounded-md">
+    <form
+      className="max-w-md mx-auto p-6 bg-white shadow-md rounded-md"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="py-6 flex flex-col gap-3">
         <div className="flex flex-row gap-8 items-center">
           <NounsIcon />
@@ -82,10 +91,10 @@ export const CryptoExchangerRegisterForm = () => {
           errors={errors}
         />
       </div>
-
       <button
         type="submit"
         className="button w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+        onClick={handleSubmit(onSubmit)}
       >
         Submit
       </button>
