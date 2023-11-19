@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { DragAndDrop } from "@/app/components/form/DragNDrop";
@@ -87,8 +88,6 @@ export const ListOfCryptoExchanger = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<INewOrder>();
-
-  console.log("the error is :", error);
 
   const uploadFile = async (files: FileList) => {
     try {

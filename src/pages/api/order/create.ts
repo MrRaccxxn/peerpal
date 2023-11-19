@@ -8,7 +8,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    console.log("oder coming", req.body);
     dbConnect();
     const order = OrderModel;
     const newOrder = await order.create(req.body?.order);
