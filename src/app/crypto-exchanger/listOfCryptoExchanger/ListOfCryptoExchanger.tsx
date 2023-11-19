@@ -17,9 +17,10 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import lighthouse from "@lighthouse-web3/sdk";
 import { randomUUID } from "crypto";
 import { Spinner } from "@/app/components/Icons/Icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { escrowAbi } from "@/app/web3/abi/EscrowAbi";
 import { set } from "lodash";
+import cryptoExchangerEndpoints from "@/pages/api/endpoints/crypto-exchanger/crypto-exchanger.endpoint";
 
 type INewOrder = {
   amount: number;
@@ -41,15 +42,19 @@ export const ListOfCryptoExchanger = () => {
   const contractAddress =
     process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_SCROLL ?? "";
 
-  const { config } = usePrepareContractWrite({
+  const {
+    refetch,
+    isLoading: isWriting,
+    isSuccess,
+    status
+  } = usePrepareContractWrite({
     address: contractAddress as `0x${string}`,
     abi: escrowAbi,
     functionName: "createEscrowNativeCoin",
     args: [contractConfig.cryptoExchangerWallet, Number(contractConfig.amount)],
     value: BigInt(contractConfig.amount),
   });
-  const { write } = useContractWrite(config);
-
+console.log("status", status)
   const {
     register,
     handleSubmit,
@@ -57,25 +62,46 @@ export const ListOfCryptoExchanger = () => {
   } = useForm<INewOrder>();
 
   const uploadFile = async (files: FileList) => {
-    const output = await lighthouse
-      .upload(files, process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY ?? "")
-      .then((res) => res);
+    try {
+      const output = await lighthouse.upload(
+        files,
+        process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY ?? ""
+      );
 
-    return output;
+      console.log("output lightouse", output);
+      return output;
+    } catch (e) {
+      toast.error("Error uploading the file");
+    }
   };
 
   const onSubmit = handleSubmit(async (data: INewOrder) => {
-    setIsLoading(true);
     setContractConfig({
-      cryptoExchangerWallet: "0x197a05BC77152D9018432970EB7736B4461a5691",
+      cryptoExchangerWallet: lastSelectedCryptoExchanger,
       amount: data.amount,
     });
-    const fileResponse = await uploadFile(data.image);
-    if (fileResponse?.data) {
-      write && write();
-    }
+    setIsLoading(true);
+    const uploadFileResponse = await uploadFile(data.image);
+    if (uploadFileResponse?.data) refetch && refetch();
     setIsLoading(false);
   });
+
+  useEffect(() => {
+    const saveDataIntoDb = async () => {
+      await orderEndpoints.createOrder({
+        userWallet: (address as string) ?? "0x...",
+        cryptoExchangerWallet: contractConfig.cryptoExchangerWallet,
+        cryptoCurrency: "ETH",
+        amount: Number(contractConfig.amount),
+        orderStatus: "PENDING",
+      });
+    };
+
+    if (isSuccess) {
+      saveDataIntoDb();
+      router.push(`/order/${address}`);
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -261,11 +287,14 @@ export const ListOfCryptoExchanger = () => {
                 label={"PDF"}
               />
               <div>
-                {isLoading ? (
+                {isLoading ?? isWriting ? (
                   <Spinner />
                 ) : (
                   <div className="flex flex-row gap-2 justify-end">
-                    <button className="btn btn-primary text-white" onClick={onSubmit}>
+                    <button
+                      className="btn btn-primary text-white"
+                      onClick={onSubmit}
+                    >
                       Start order
                     </button>
                     <button className="btn">Close</button>
