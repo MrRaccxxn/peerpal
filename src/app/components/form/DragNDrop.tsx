@@ -52,7 +52,7 @@ export const DragAndDrop = ({
             alt="Event"
             src={image || URL?.createObjectURL(memoryImage[0])}
             layout="fill"
-            objectFit="cover"
+            objectFit="contain"
             className={classnames(
               `${
                 square

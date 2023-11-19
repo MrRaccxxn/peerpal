@@ -107,12 +107,12 @@ export const ListOfCryptoExchanger = () => {
                       <thead className="align-bottom">
                         <tr className="font-semibold text-[0.95rem] text-secondary-dark">
                           <th className="pb-3 text-start min-w-[175px]">
-                            TASK
+                            WALLET
                           </th>
                           <th className="pb-3 text-end min-w-[100px]">BUYER</th>
                           <th className="pb-3 text-end min-w-[100px]">PRICE</th>
                           <th className="pb-3 pr-12 text-end min-w-[175px]">
-                            RANK
+                            AVAILABLE AMOUNT
                           </th>
                           <th className="pb-3 pr-12 text-end min-w-[100px]">
                             LAST ACTIVE
@@ -139,16 +139,20 @@ export const ListOfCryptoExchanger = () => {
                               }}
                             >
                               <td className="p-3 pl-0">
-                                <div className="flex flex-row items-center">
+                                <div className="flex flex-row items-center gap-3">
                                   <div className="avatar placeholder">
-                                    <div className="bg-neutral text-neutral-content rounded-full w-12">
+                                    <div className="bg-gray-600 text-neutral-content rounded-full w-12">
                                       <span className="text-lg">
                                         {item.fullName[0].toUpperCase()}
                                       </span>
                                     </div>
                                   </div>
-                                  <span className="text-sm text-black">
-                                    {item.walletAddress}
+                                  <span className="text-base text-gray-500">
+                                    {item.walletAddress.slice(0, 4)}...
+                                    {item.walletAddress.slice(
+                                      item.walletAddress.length - 4,
+                                      item.walletAddress.length - 1
+                                    )}
                                   </span>
                                 </div>
                               </td>
@@ -176,13 +180,12 @@ export const ListOfCryptoExchanger = () => {
                                   {item.exchangeRate}
                                 </span>
                               </td>
-                              <td className="p-3 pr-12 text-end">
-                                <span className="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">
-                                  {" "}
-                                  In Progress{" "}
+                              <td className="p-3 text-center">
+                                <span className="text-end align-baseline inline-flex items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">
+                                  {item.limitAvailable}.-
                                 </span>
                               </td>
-                              <td className="pr-0 text-start">
+                              <td className="pr-0 text-center">
                                 <span className="font-semibold text-light-inverse text-md/normal">
                                   2023-08-23
                                 </span>
@@ -259,10 +262,10 @@ export const ListOfCryptoExchanger = () => {
               />
               <div>
                 {isLoading ? (
-                    <Spinner />
+                  <Spinner />
                 ) : (
                   <div className="flex flex-row gap-2 justify-end">
-                    <button className="btn btn-primary" onClick={onSubmit}>
+                    <button className="btn btn-primary text-white" onClick={onSubmit}>
                       Start order
                     </button>
                     <button className="btn">Close</button>
