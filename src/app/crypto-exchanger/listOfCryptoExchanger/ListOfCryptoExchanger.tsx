@@ -46,7 +46,8 @@ export const ListOfCryptoExchanger = () => {
     refetch,
     isLoading: isWriting,
     isSuccess,
-    status
+    isError,
+    status,
   } = usePrepareContractWrite({
     address: contractAddress as `0x${string}`,
     abi: escrowAbi,
@@ -54,7 +55,7 @@ export const ListOfCryptoExchanger = () => {
     args: [contractConfig.cryptoExchangerWallet, Number(contractConfig.amount)],
     value: BigInt(contractConfig.amount),
   });
-console.log("status", status)
+  console.log("status", status);
   const {
     register,
     handleSubmit,
@@ -68,7 +69,6 @@ console.log("status", status)
         process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY ?? ""
       );
 
-      console.log("output lightouse", output);
       return output;
     } catch (e) {
       toast.error("Error uploading the file");
@@ -97,7 +97,7 @@ console.log("status", status)
       });
     };
 
-    if (isSuccess) {
+    if (!isError && isSuccess) {
       saveDataIntoDb();
       router.push(`/order/${address}`);
     }
