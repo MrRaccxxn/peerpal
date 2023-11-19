@@ -6,11 +6,11 @@ import { WrappedToastContainer } from "./components/Toast";
 import { Navbar } from "./components/layout/Navbar";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import ClientRehydration from "./utils/ClientRehydration";
-import { PropsWithChildren } from "react";
+import { LayoutProps } from "./@types/layout";
 
 const queryClient = new QueryClient();
 
-export default function RootLayout(props: PropsWithChildren<{}>) {
+export default function RootLayout(props: LayoutProps) {
   return (
     <html>
       <body>
