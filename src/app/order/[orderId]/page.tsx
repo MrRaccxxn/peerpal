@@ -1,10 +1,21 @@
 "use client";
 
 import Container from "@/app/components/layout/Container";
-import { useAccount } from "wagmi";
-
+import { useAccount, useContractRead } from "wagmi";
+import { escrowAbi } from "@/app/web3/abi/EscrowAbi";
 const OrderDetail = () => {
   const { address } = useAccount();
+
+  const contractAddress =
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_SCROLL ?? "";
+
+  const { data } = useContractRead({
+    address: contractAddress as `0x${string}`,
+    abi: escrowAbi,
+    
+  });
+  console.log("datapoloaza", data);
+
   return (
     <Container className="flex h-full w-full">
       <div className="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">

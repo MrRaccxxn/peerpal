@@ -1,38 +1,17 @@
 import { models, model, Schema } from "mongoose";
 
 const OrderSchema: Schema = new Schema({
-  userId: {
+  userWallet: {
     type: String,
     required: true,
   },
-  cryptoExchangerId: {
-    type: String,
-    required: true,
-  },
-  cryptoCurrency: {
+  cryptoExchangerWallet: {
     type: String,
     required: true,
   },
   amount: {
     type: Number,
     required: true,
-  },
-  fiatCurrency: {
-    type: String,
-    required: true,
-  },
-  cityOfTransaction: {
-    type: String,
-    required: true,
-  },
-  orderStartedAt: {
-    type: Date,
-  },
-  orderFinishedAt: {
-    type: Date,
-  },
-  orderStatus: {
-    type: String,
   },
 });
 

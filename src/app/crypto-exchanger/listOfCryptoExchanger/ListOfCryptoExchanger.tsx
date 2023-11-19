@@ -13,7 +13,13 @@ import {
   useForm,
 } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+} from "wagmi";
 import lighthouse from "@lighthouse-web3/sdk";
 import { randomUUID } from "crypto";
 import { Spinner } from "@/app/components/Icons/Icons";
@@ -21,6 +27,7 @@ import { useEffect, useState } from "react";
 import { escrowAbi } from "@/app/web3/abi/EscrowAbi";
 import { set } from "lodash";
 import cryptoExchangerEndpoints from "@/pages/api/endpoints/crypto-exchanger/crypto-exchanger.endpoint";
+import { dataReaderAbi } from "@/app/web3/abi/dataReaderAbi";
 
 type INewOrder = {
   amount: number;
@@ -38,29 +45,50 @@ export const ListOfCryptoExchanger = () => {
     cryptoExchangerWallet: "",
     amount: 0,
   });
+  const { chain } = useNetwork();
+  let contractAddress = "";
 
-  const contractAddress =
-    process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_SCROLL ?? "";
+  //linea goerli
+  if (chain?.id === 59140)
+    contractAddress =
+      process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_LINEA ?? "";
+  //scroll
+  if (chain?.id === 534351)
+    contractAddress =
+      process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_SCROLL ?? "";
 
-  const {
-    refetch,
-    isLoading: isWriting,
-    isSuccess,
-    isError,
-    status,
-  } = usePrepareContractWrite({
+  const contractPriceAddress =
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_DATA_READER_ADDRESS ?? "";
+
+  const { data: tokenPrice, isError: isErrorGettingPrice } = useContractRead({
+    address: contractPriceAddress as `0x${string}`,
+    abi: dataReaderAbi,
+    functionName: "readDataFeed",
+  });
+
+  console.log(tokenPrice);
+
+  const { config } = usePrepareContractWrite({
     address: contractAddress as `0x${string}`,
     abi: escrowAbi,
     functionName: "createEscrowNativeCoin",
     args: [contractConfig.cryptoExchangerWallet, Number(contractConfig.amount)],
     value: BigInt(contractConfig.amount),
   });
-  console.log("status", status);
+  const {
+    write,
+    isError,
+    isSuccess,
+    error,
+    isLoading: contractIsLoading,
+  } = useContractWrite(config);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<INewOrder>();
+
+  console.log("the error is :", error);
 
   const uploadFile = async (files: FileList) => {
     try {
@@ -82,7 +110,7 @@ export const ListOfCryptoExchanger = () => {
     });
     setIsLoading(true);
     const uploadFileResponse = await uploadFile(data.image);
-    if (uploadFileResponse?.data) refetch && refetch();
+    if (uploadFileResponse?.data) write && write();
     setIsLoading(false);
   });
 
@@ -91,9 +119,7 @@ export const ListOfCryptoExchanger = () => {
       await orderEndpoints.createOrder({
         userWallet: (address as string) ?? "0x...",
         cryptoExchangerWallet: contractConfig.cryptoExchangerWallet,
-        cryptoCurrency: "ETH",
         amount: Number(contractConfig.amount),
-        orderStatus: "PENDING",
       });
     };
 
@@ -101,7 +127,14 @@ export const ListOfCryptoExchanger = () => {
       saveDataIntoDb();
       router.push(`/order/${address}`);
     }
-  }, [isSuccess]);
+  }, [
+    address,
+    contractConfig.amount,
+    contractConfig.cryptoExchangerWallet,
+    isError,
+    isSuccess,
+    router,
+  ]);
 
   return (
     <>
@@ -110,8 +143,39 @@ export const ListOfCryptoExchanger = () => {
           <span className="loading loading-spinner text-primary"></span>
         </div>
       ) : (
-        <div className="flex flex-wrap m-12 min-h-screen">
-          <div className="w-full max-w-full px-3 mb-6  mx-auto">
+        <div className="  mt-6 mb-12 min-h-screen">
+          <div className="w-full max-w-full px-3 mb-6 mx-auto flex flex-col justify-center items-center">
+            {!isErrorGettingPrice && (
+              <div role="alert" className="alert alert-warning w-fit h-fit">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <div className="flex flex-col text-center">
+                  <span className="text-sm text-black-800">
+                    Warning: Always take into account the current asset price!
+                  </span>
+                  <span>
+                    ETH price now:{"  "}
+                    {/* ({tokenPrice?.[1] && `${new Date(tokenPrice?.[1] * 1000)}`}) */}
+                    <span className="font-bold">
+                      {tokenPrice?.[0] &&
+                        BigInt(tokenPrice?.[0]).toString().slice(0, 4)}
+                      {" USD"}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
               <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
                 <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
