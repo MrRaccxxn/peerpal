@@ -13,11 +13,13 @@ import {
   useForm,
 } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import lighthouse from "@lighthouse-web3/sdk";
 import { randomUUID } from "crypto";
 import { Spinner } from "@/app/components/Icons/Icons";
 import { useState } from "react";
+import { escrowAbi } from "@/app/web3/abi/EscrowAbi";
+import { set } from "lodash";
 
 type INewOrder = {
   amount: number;
@@ -29,6 +31,24 @@ export const ListOfCryptoExchanger = () => {
   const { address } = useAccount();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [lastSelectedCryptoExchanger, setLastSelectedCryptoExchanger] =
+    useState("");
+  const [contractConfig, setContractConfig] = useState({
+    cryptoExchangerWallet: "",
+    amount: 0,
+  });
+
+  const contractAddress =
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_ESCROW_ADDRESS_SCROLL ?? "";
+
+  const { config } = usePrepareContractWrite({
+    address: contractAddress as `0x${string}`,
+    abi: escrowAbi,
+    functionName: "createEscrowNativeCoin",
+    args: [contractConfig.cryptoExchangerWallet, Number(contractConfig.amount)],
+    value: BigInt(contractConfig.amount),
+  });
+  const { write } = useContractWrite(config);
 
   const {
     register,
@@ -46,18 +66,25 @@ export const ListOfCryptoExchanger = () => {
 
   const onSubmit = handleSubmit(async (data: INewOrder) => {
     setIsLoading(true);
+    setContractConfig({
+      cryptoExchangerWallet: "0x197a05BC77152D9018432970EB7736B4461a5691",
+      amount: data.amount,
+    });
     const fileResponse = await uploadFile(data.image);
-    console.log(fileResponse);
-
+    if (fileResponse?.data) {
+      write && write();
+    }
     setIsLoading(false);
   });
 
   return (
     <>
       {useGetAllCryptoExchangers.isLoading ? (
-        <span className="loading loading-spinner text-primary"></span>
+        <div className="h-screen w-screen flex justify-center items-center">
+          <span className="loading loading-spinner text-primary"></span>
+        </div>
       ) : (
-        <div className="flex flex-wrap m-12">
+        <div className="flex flex-wrap m-12 min-h-screen">
           <div className="w-full max-w-full px-3 mb-6  mx-auto">
             <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
               <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
@@ -102,6 +129,9 @@ export const ListOfCryptoExchanger = () => {
                               className="border-b border-dashed last:border-b-0 cursor-pointer"
                               key={item.id}
                               onClick={() => {
+                                setLastSelectedCryptoExchanger(
+                                  item.walletAddress
+                                );
                                 const documentModal =
                                   document?.getElementById("my_modal_1");
                                 if (documentModal && documentModal?.showModal)
@@ -229,7 +259,7 @@ export const ListOfCryptoExchanger = () => {
               />
               <div>
                 {isLoading ? (
-                  <Spinner />
+                    <Spinner />
                 ) : (
                   <div className="flex flex-row gap-2 justify-end">
                     <button className="btn btn-primary" onClick={onSubmit}>

@@ -5,7 +5,7 @@ import { walletConnectProvider, EIP6963Connector } from "@web3modal/wagmi";
 
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-import { mainnet } from "viem/chains";
+import { scrollSepolia } from "viem/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
@@ -16,7 +16,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? "";
 
 // 2. Create wagmiConfig
 const { chains, publicClient } = configureChains(
-  [mainnet],
+  [scrollSepolia],
   [walletConnectProvider({ projectId }), publicProvider()]
 );
 

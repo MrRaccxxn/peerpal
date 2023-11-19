@@ -10,12 +10,16 @@ const CryptoExchangerSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  exchangeRate : {
+  exchangeRate: {
     type: Number,
     required: true,
   },
-  limitAvailable : {
+  limitAvailable: {
     type: Number,
+    required: true,
+  },
+  walletAddress: {
+    type: String,
     required: true,
   },
 });

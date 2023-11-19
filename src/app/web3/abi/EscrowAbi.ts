@@ -1,5 +1,16 @@
 export const escrowAbi = [
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "ERC20Address",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -135,105 +146,6 @@ export const escrowAbi = [
     type: "event",
   },
   {
-    inputs: [
-      {
-        internalType: "address payable",
-        name: "_seller",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_value",
-        type: "uint256",
-      },
-    ],
-    name: "createEscrowNativeCoin",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_orderId",
-        type: "uint256",
-      },
-    ],
-    name: "refundBuyerNativeCoin",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_orderId",
-        type: "uint256",
-      },
-    ],
-    name: "releaseEscrowNativeCoin",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_feeBuyer",
-        type: "uint256",
-      },
-    ],
-    name: "setFeeBuyer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_feeSeller",
-        type: "uint256",
-      },
-    ],
-    name: "setFeeSeller",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_orderId",
-        type: "uint256",
-      },
-      {
-        internalType: "string",
-        name: "_idImage",
-        type: "string",
-      },
-    ],
-    name: "setOrderSeller",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "ERC20Address",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
     inputs: [],
     name: "_token",
     outputs: [
@@ -257,6 +169,24 @@ export const escrowAbi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address payable",
+        name: "_seller",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_value",
+        type: "uint256",
+      },
+    ],
+    name: "createEscrowNativeCoin",
+    outputs: [],
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -327,6 +257,19 @@ export const escrowAbi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "feeSeller",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "contract IERC20",
@@ -360,19 +303,6 @@ export const escrowAbi = [
   },
   {
     inputs: [],
-    name: "feeSeller",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "owner",
     outputs: [
       {
@@ -382,6 +312,76 @@ export const escrowAbi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_orderId",
+        type: "uint256",
+      },
+    ],
+    name: "refundBuyerNativeCoin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_orderId",
+        type: "uint256",
+      },
+    ],
+    name: "releaseEscrowNativeCoin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_feeBuyer",
+        type: "uint256",
+      },
+    ],
+    name: "setFeeBuyer",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_feeSeller",
+        type: "uint256",
+      },
+    ],
+    name: "setFeeSeller",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_orderId",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "_idImage",
+        type: "string",
+      },
+    ],
+    name: "setOrderSeller",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ];

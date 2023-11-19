@@ -41,6 +41,7 @@ export const CryptoExchangerRegisterForm = () => {
     },
   });
   const onSubmit = (data: CryptoExchangerPersonalDetailsProps) => {
+    if (!address) return toast.error("You must be connected to a wallet");
     createCryptoExchanger.mutate({
       ...data,
       walletAddress: address ?? "",
