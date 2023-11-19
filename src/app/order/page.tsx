@@ -13,8 +13,6 @@ const OrderPage = () => {
     functionName: "readDataFeed",
   });
 
-  console.log("data received", data);
-
   return <></>;
 };
 

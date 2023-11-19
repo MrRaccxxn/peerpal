@@ -14,7 +14,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    console.log("first req.body",req.body)
     dbConnect();
     const order = OrderModel;
 
@@ -23,7 +22,6 @@ export default async function handler(
 
       form.parse(req, (err, fields, files) => {
         if (err) reject({ err });
-        console.log("da files", files);
         resolve({ err, fields, files });
       });
     });
